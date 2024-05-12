@@ -5,6 +5,13 @@ dotenv.config();
 
 const app = express();
 
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 8080;
