@@ -7,11 +7,12 @@ const app = express();
 
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader("Access-Control-Allow-Methods", "*");
   res.setHeader("Access-Control-Allow-Headers", "*");
   next();
 });
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 8080;
@@ -38,7 +39,7 @@ app.post("/offer", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
         },
-        body: offer,
+        body: JSON.stringify(offer),
         method: "POST",
       }
     );
@@ -52,10 +53,10 @@ app.post("/offer", async (req, res) => {
   }
 });
 
-app.get("/getoffer", async (req, res) => {
-  if (!req.body) return res.status(400).json({ message: "Invalid id" });
+app.get("/getoffer/:id", async (req, res) => {
+  if (!req.params) return res.status(400).json({ message: "Invalid id" });
 
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) return res.status(400).json({ message: "Invalid id" });
 
@@ -73,7 +74,6 @@ app.get("/getoffer", async (req, res) => {
       }
     );
     const data = await response.json();
-    console.log(data);
 
     res
       .status(200)
@@ -103,7 +103,7 @@ app.post("/answer", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
         },
-        body: answer,
+        body: JSON.stringify(answer),
         method: "POST",
       }
     );
@@ -117,10 +117,10 @@ app.post("/answer", async (req, res) => {
   }
 });
 
-app.get("/getanswer", async (req, res) => {
-  if (!req.body) return res.status(400).json({ message: "Invalid id" });
+app.get("/getanswer/:id", async (req, res) => {
+  if (!req.params) return res.status(400).json({ message: "Invalid id" });
 
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) return res.status(400).json({ message: "Invalid id" });
 
