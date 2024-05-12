@@ -1,0 +1,146 @@
+import express from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+
+const PORT = process.env.PORT || 8080;
+
+app.get("/", async (req, res) => {
+  res.json({ message: "P2P Signaling Server is running!" });
+});
+
+app.post("/offer", async (req, res) => {
+  if (!req.body) return res.status(400).json({ message: "Invalid offer" });
+
+  const { offer, id } = req.body;
+
+  if (!offer || !id) return res.status(400).json({ message: "Invalid offer" });
+
+  // checking if id is 4 digit number
+  if (!/^\d{4}$/.test(id))
+    return res.status(400).json({ message: "Invalid id" });
+
+  try {
+    const response = await fetch(
+      `${process.env.KV_REST_API_URL}/set/${id}-offer`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+        body: offer,
+        method: "POST",
+      }
+    );
+
+    await response.json();
+
+    res.status(200).json({ message: "Offer saved successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to save offer" });
+  }
+});
+
+app.get("/getoffer", async (req, res) => {
+  if (!req.body) return res.status(400).json({ message: "Invalid id" });
+
+  const { id } = req.body;
+
+  if (!id) return res.status(400).json({ message: "Invalid id" });
+
+  // checking if id is 4 digit number
+  if (!/^\d{4}$/.test(id))
+    return res.status(400).json({ message: "Invalid id" });
+
+  try {
+    const response = await fetch(
+      `${process.env.KV_REST_API_URL}/get/${id}-offer`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+
+    res
+      .status(200)
+      .json({ message: "Offer fetched successfully", offer: data?.result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch offer" });
+  }
+});
+
+app.post("/answer", async (req, res) => {
+  if (!req.body) return res.status(400).json({ message: "Invalid answer" });
+
+  const { answer, id } = req.body;
+
+  if (!answer || !id)
+    return res.status(400).json({ message: "Invalid answer" });
+
+  // checking if id is 4 digit number
+  if (!/^\d{4}$/.test(id))
+    return res.status(400).json({ message: "Invalid id" });
+
+  try {
+    const response = await fetch(
+      `${process.env.KV_REST_API_URL}/set/${id}-answer`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+        body: answer,
+        method: "POST",
+      }
+    );
+
+    await response.json();
+
+    res.status(200).json({ message: "Answer saved successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to save answer" });
+  }
+});
+
+app.get("/getanswer", async (req, res) => {
+  if (!req.body) return res.status(400).json({ message: "Invalid id" });
+
+  const { id } = req.body;
+
+  if (!id) return res.status(400).json({ message: "Invalid id" });
+
+  // checking if id is 4 digit number
+  if (!/^\d{4}$/.test(id))
+    return res.status(400).json({ message: "Invalid id" });
+
+  try {
+    const response = await fetch(
+      `${process.env.KV_REST_API_URL}/get/${id}-answer`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+      }
+    );
+    const data = await response.json();
+
+    res
+      .status(200)
+      .json({ message: "Answer fetched successfully", answer: data?.result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch answer" });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
