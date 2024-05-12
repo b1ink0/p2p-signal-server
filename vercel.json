@@ -6,8 +6,10 @@
             "destination": "/api"
         }
     ],
-    "routes": {
-        "src": "/(.*)",
-        "dest": "/"
-    }
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ]
 }
