@@ -34,7 +34,7 @@ app.post("/offer", async (req, res) => {
 
   try {
     const response = await fetch(
-      `${process.env.KV_REST_API_URL}/set/${id}-offer`,
+      `${process.env.KV_REST_API_URL}/set/${id}-offer?ex=300`,
       {
         headers: {
           Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
@@ -98,7 +98,7 @@ app.post("/answer", async (req, res) => {
 
   try {
     const response = await fetch(
-      `${process.env.KV_REST_API_URL}/set/${id}-answer`,
+      `${process.env.KV_REST_API_URL}/set/${id}-answer?ex=300`,
       {
         headers: {
           Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
